@@ -61,6 +61,7 @@
       <module>http-server-helloworld</module>
       <module>hystrix-helloworld</module>
       <module>openshift-base</module>
+      <module>monitoring</module>
    </modules>
    <dependencyManagement>
       <dependencies>
@@ -200,8 +201,6 @@
                   <arguments>
                      <argument>-Djava.util.logging.manager=org.apache.logging.log4j.jul.LogManager</argument>
                      <argument>-Dorg.apache.commons.logging.Log=org.apache.logging.log4j.jcl.Log4jLog</argument>
-                     <argument>-ea</argument>
-                     <argument>-jar</argument>
                      <argument>${project.build.directory}/${project.build.finalName}.jar</argument>
                   </arguments>
                </configuration>

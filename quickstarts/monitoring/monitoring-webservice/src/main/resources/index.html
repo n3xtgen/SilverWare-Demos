@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<body>
+<form>
+    <h2>Get numbers for</h2>
+    <p style="color: blue">Get numbers for</p>
+    <p>Decimal precision of Pi: <input name="piPrecision" type="text" value="{1}"/></p>
+    <p>Count of Fibonacci numbers: <input name="fibonacciCount" type="text" value="{4}"/></p>
+    <input type="submit" value="GET" />
+    <table style="table-layout: fixed; width: 100%">
+    <tr><td style="width: 50%; vertical-align: top; visibility: {0}">
+        <h4>Pi with decimal precision of {1}  is:</h4>
+        <p style="word-wrap: break-word; width: 100%">{2}</p>
+        </td><td style="width: 50%; vertical-align: top; visibility: {3}">
+        <h4>Fibonacci sequence of {4} numbers is:</h4>
+        <p>{5}</p>
+        </td></tr>
+    </table>
+    </form>
+</body>
+</html>
