@@ -5,6 +5,7 @@ import brave.opentracing.BraveTracer;
 import io.opentracing.util.GlobalTracer;
 import io.silverware.microservices.Context;
 import io.silverware.microservices.providers.MicroserviceProvider;
+import io.silverware.microservices.silver.MetricsSilverService;
 import io.silverware.microservices.silver.TracingSilverService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -29,7 +30,7 @@ public class OpenTracingImplementationMicroserviceProvider implements Microservi
       AsyncReporter reporter = AsyncReporter.builder(sender).build();
 
       Tracer braveTracer = Tracer.newBuilder()
-            .localServiceName("NumbersApp")
+            .localServiceName((String) context.getProperties().get(MetricsSilverService.GRAPHITE_PREFIX))
             .reporter(reporter)
             .build();
 

@@ -22,16 +22,20 @@ package io.silverware.demos.quickstarts.monitoring.restservice;
 import com.codahale.metrics.Counter;
 import com.codahale.metrics.Timer;
 import com.codahale.metrics.health.HealthCheck;
+import io.opentracing.Span;
 import io.opentracing.contrib.jaxrs2.server.Traced;
 import io.silverware.demos.quickstarts.monitoring.core.NumbersService;
 import io.silverware.microservices.annotations.Microservice;
 import io.silverware.microservices.annotations.MicroserviceReference;
 import io.silverware.microservices.providers.metrics.utils.Metrics;
+import io.silverware.microservices.providers.opentracing.rest.ServerSpan;
+import io.silverware.microservices.providers.opentracing.utils.Tracing;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
+import javax.ws.rs.BeanParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -72,13 +76,18 @@ public class NumbersRestService {
    @Path("pi")
    @Produces(MediaType.TEXT_PLAIN)
    @Traced(operationName = "piWithPrecision")
-   public Response piWithPrecision(@QueryParam("precision") int precision) {
+   public Response piWithPrecision(@QueryParam("precision") int precision, @BeanParam ServerSpan serverSpan) {
+
+      Tracing.spanManager().activate(serverSpan.get());
 
       log.info(this + " REST cluster service was asked for Pi with precision: " + precision);
 
       piRequestCount.inc();
 
-      String pi = workersClusterService.getPiForPrecision(precision);
+      Span piRequestSpan = Tracing.createSpan("fibonacciClusterRequestClient", Tracing.currentSpan())
+            .setTag("span.kind", "client");
+
+      String pi = workersClusterService.getPiForPrecision(precision, piRequestSpan.context());
 
       return Response.ok(pi).build();
    }
@@ -87,13 +96,18 @@ public class NumbersRestService {
    @Path("fibonacci")
    @Produces(MediaType.TEXT_PLAIN)
    @Traced(operationName = "fibonacciSequence")
-   public Response fibonacciSequence(@QueryParam("count") int numberCount) {
+   public Response fibonacciSequence(@QueryParam("count") int numberCount, @BeanParam ServerSpan serverSpan) {
+
+      Tracing.spanManager().activate(serverSpan.get());
 
       log.info(this + " REST cluster service was asked for Fibonacci sequence with number count: " + numberCount);
 
       fibonacciRequestCount.inc();
 
-      String fibonacciSequence = workersClusterService.getFibonacciSequence(numberCount);
+      Span fibonacciRequestSpan = Tracing.createSpan("fibonacciClusterRequestClient", Tracing.currentSpan())
+            .setTag("span.kind", "client");
+
+      String fibonacciSequence = workersClusterService.getFibonacciSequence(numberCount, fibonacciRequestSpan.context());
 
       return Response.ok(fibonacciSequence).build();
    }

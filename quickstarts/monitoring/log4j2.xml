@@ -20,8 +20,8 @@
       <Logger name="com" level="info"/>
       <Logger name="org" level="info"/>
       <Logger name="io" level="info"/>
-      <Logger name="io.silverware" level="debug"/>
-      <Root level="debug">
+      <Logger name="io.silverware" level="info"/>
+      <Root level="info">
          <AppenderRef ref="ASYNC"/>
       </Root>
    </Loggers>

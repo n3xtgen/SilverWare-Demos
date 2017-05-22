@@ -23,14 +23,21 @@ import com.codahale.metrics.Counter;
 import com.codahale.metrics.ExponentiallyDecayingReservoir;
 import com.codahale.metrics.Histogram;
 import com.codahale.metrics.Timer;
+import io.opentracing.Span;
+import io.opentracing.SpanContext;
+import io.opentracing.propagation.Format;
+import io.opentracing.propagation.TextMapExtractAdapter;
+import io.opentracing.util.GlobalTracer;
 import io.silverware.demos.quickstarts.monitoring.core.PiWorker;
 import io.silverware.microservices.annotations.Microservice;
 import io.silverware.microservices.providers.metrics.utils.Metrics;
+import io.silverware.microservices.providers.opentracing.utils.Tracing;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.annotation.PostConstruct;
 import java.math.BigDecimal;
+import java.util.Map;
 
 /**
  * Default implementation of PiWorker microservice.
@@ -60,7 +67,14 @@ public class DefaultPiWorker implements PiWorker {
     * Gets string of Pi number using Pi class.
     */
    @Override
-   public String getPiForPrecision(int precision) {
+   public String getPiForPrecision(int precision, Map spanContextMap) {
+
+      Span piRequestSpan = null;
+      if (spanContextMap != null) {
+         SpanContext spanContext = GlobalTracer.get().extract(Format.Builtin.TEXT_MAP, new TextMapExtractAdapter(spanContextMap));
+         piRequestSpan = Tracing.createSpan("piClusterRequestServer", spanContext).setTag("span.kind", "server");
+      }
+
       log.info(Integer.toHexString(hashCode()) + " Was asked for Pi number with precision: " + precision);
 
       precisionHistogram.update(precision);
@@ -73,6 +87,10 @@ public class DefaultPiWorker implements PiWorker {
       long duration = System.currentTimeMillis() - startTime;
 
       log.info(Integer.toHexString(hashCode()) + " Calculated Pi on " + precision + " decimals in: " + duration + "ms");
+
+      if (piRequestSpan != null) {
+         piRequestSpan.finish();
+      }
 
       return pi.toString();
    }

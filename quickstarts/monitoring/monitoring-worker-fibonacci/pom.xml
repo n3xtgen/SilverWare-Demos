@@ -12,7 +12,7 @@
       <fabric8.replicas>3</fabric8.replicas>
    </properties>
 
-   <artifactId>monitoring-worker</artifactId>
+   <artifactId>monitoring-worker-fibonacci</artifactId>
    <dependencies>
       <dependency>
          <groupId>io.silverware.demos.quickstarts</groupId>

@@ -20,10 +20,6 @@
          <groupId>io.silverware</groupId>
          <artifactId>cdi-microservice-provider</artifactId>
       </dependency>
-      <dependency>
-         <groupId>io.silverware</groupId>
-         <artifactId>http-server-microservice-provider</artifactId>
-      </dependency>
    </dependencies>
    <profiles>
       <profile>

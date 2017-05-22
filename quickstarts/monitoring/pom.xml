@@ -21,7 +21,8 @@
       <module>monitoring-core</module>
       <module>monitoring-webservice</module>
       <module>monitoring-restservice</module>
-      <module>monitoring-worker</module>
+      <module>monitoring-worker-pi</module>
+      <module>monitoring-worker-fibonacci</module>
    </modules>
 
    <dependencies>
@@ -37,19 +38,6 @@
          <groupId>io.silverware</groupId>
          <artifactId>metrics-microservice-provider</artifactId>
       </dependency>
-      <dependency>
-         <groupId>io.silverware</groupId>
-         <artifactId>cdi-microservice-provider</artifactId>
-      </dependency>
-      <dependency>
-         <groupId>io.silverware</groupId>
-         <artifactId>http-server-microservice-provider</artifactId>
-      </dependency>
-      <dependency>
-         <groupId>io.silverware</groupId>
-         <artifactId>rest-client-microservice-provider</artifactId>
-      </dependency>
-
 
       <dependency>
          <groupId>org.jgroups.kubernetes</groupId>
@@ -61,7 +49,7 @@
       <dependency>
          <groupId>io.opentracing.brave</groupId>
          <artifactId>brave-opentracing</artifactId>
-         <version>0.19.3</version>
+         <version>0.19.2</version>
       </dependency>
       <dependency>
          <groupId>io.zipkin.reporter</groupId>

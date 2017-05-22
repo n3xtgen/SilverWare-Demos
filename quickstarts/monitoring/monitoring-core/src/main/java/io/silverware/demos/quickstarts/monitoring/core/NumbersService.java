@@ -42,12 +42,10 @@ public interface NumbersService {
    @GET
    @Path("pi")
    @Produces(MediaType.TEXT_PLAIN)
-   //@Tracing
    String piWithPrecision(@QueryParam("precision") int precision);
 
    @GET
    @Path("fibonacci")
    @Produces(MediaType.TEXT_PLAIN)
-   //@Tracing
    String fibonacciSequence(@QueryParam("count") int numberCount);
 }

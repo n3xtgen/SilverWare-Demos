@@ -19,6 +19,10 @@
  */
 package io.silverware.demos.quickstarts.monitoring.core;
 
+import io.opentracing.SpanContext;
+
+import java.util.Map;
+
 /**
  * Interface for clustered worker microservice which generates Fibonacci squence with given count of numbers.
  *
@@ -31,6 +35,5 @@ public interface FibonacciWorker {
     * @param numberCount count of fibonacci numbers
     * @return string "1 1 2 3 5 8 13 21 44 ..."
     */
-   //@Tracing
-   String getFibonacciSequence(int numberCount);
+   String getFibonacciSequence(int numberCount, Map contextMap);
 }

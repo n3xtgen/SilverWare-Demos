@@ -22,15 +22,22 @@ package io.silverware.demos.quickstarts.monitoring.worker;
 import com.codahale.metrics.ExponentiallyDecayingReservoir;
 import com.codahale.metrics.Histogram;
 import com.codahale.metrics.Timer;
+import io.opentracing.Span;
+import io.opentracing.SpanContext;
+import io.opentracing.propagation.Format;
+import io.opentracing.propagation.TextMapExtractAdapter;
+import io.opentracing.util.GlobalTracer;
 import io.silverware.demos.quickstarts.monitoring.core.FibonacciWorker;
 import io.silverware.microservices.annotations.Microservice;
 
 import io.silverware.microservices.providers.metrics.utils.Metrics;
+import io.silverware.microservices.providers.opentracing.utils.Tracing;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.annotation.PostConstruct;
 import java.math.BigInteger;
+import java.util.Map;
 
 /**
  * Default implementation of FibonacciWorker microservice.
@@ -60,7 +67,13 @@ public class DefaultFibonacciWorker implements FibonacciWorker {
     * Own implementation for generating Fibonacci sequence.
     */
    @Override
-   public String getFibonacciSequence(int numberCount) {
+   public String getFibonacciSequence(int numberCount, Map spanContextMap) {
+
+      Span fibonacciRequestSpan = null;
+      if (spanContextMap != null) {
+         SpanContext spanContext = GlobalTracer.get().extract(Format.Builtin.TEXT_MAP, new TextMapExtractAdapter(spanContextMap));
+         fibonacciRequestSpan = Tracing.createSpan("fibonacciClusterRequestServer", spanContext).setTag("span.kind", "server");
+      }
 
       if (numberCount < 0) {
          throw new IllegalArgumentException("Count of numbers cannot be negative!");
@@ -92,6 +105,10 @@ public class DefaultFibonacciWorker implements FibonacciWorker {
       long duration = System.currentTimeMillis() - startTime;
 
       log.info(Integer.toHexString(hashCode()) + " Generated Fi sequence of " + numberCount + " numbers in: " + duration + "ms");
+
+      if (fibonacciRequestSpan != null) {
+         fibonacciRequestSpan.finish();
+      }
 
       return fiSequence.toString();
    }

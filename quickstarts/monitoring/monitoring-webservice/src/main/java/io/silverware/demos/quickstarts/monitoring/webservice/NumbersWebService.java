@@ -22,11 +22,14 @@ package io.silverware.demos.quickstarts.monitoring.webservice;
 import com.codahale.metrics.Counter;
 import com.codahale.metrics.Timer;
 import com.codahale.metrics.health.HealthCheck;
+import io.opentracing.contrib.jaxrs2.server.ServerSpanContext;
 import io.opentracing.contrib.jaxrs2.server.Traced;
 import io.silverware.demos.quickstarts.monitoring.core.NumbersService;
 import io.silverware.microservices.annotations.Microservice;
 import io.silverware.microservices.annotations.MicroserviceReference;
 import io.silverware.microservices.providers.metrics.utils.Metrics;
+import io.silverware.microservices.providers.opentracing.rest.ServerSpan;
+import io.silverware.microservices.providers.opentracing.utils.Tracing;
 import io.silverware.microservices.providers.rest.annotation.ServiceConfiguration;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -83,7 +86,11 @@ public class NumbersWebService {
    @Path("")
    @Produces(MediaType.TEXT_HTML)
    @Traced(operationName = "indexPageRequest")
-   public Response interfacePage(@QueryParam("piPrecision") String piPrecision, @QueryParam("fibonacciCount") String fibonacciCount) {
+   public Response interfacePage(@QueryParam("piPrecision") String piPrecision,
+                                 @QueryParam("fibonacciCount") String fibonacciCount,
+                                 @BeanParam ServerSpan serverSpan) {
+
+      Tracing.spanManager().activate(serverSpan.get());
 
       log.info("User requested webpage with params - piPrecision: " + piPrecision + " fibonacciCount: " + fibonacciCount);
 
@@ -94,7 +101,7 @@ public class NumbersWebService {
       boolean showPi = StringUtils.isNotBlank(piPrecision);
       boolean showFibonacci = StringUtils.isNotBlank(fibonacciCount);
 
-      // TODO Show how to ask for both results at the same time with object, now its two consecutive REST calls.
+      // TODO Show how to ask for both results at the same, now its two consecutive REST calls.
       String pi = showPi ? numbersService.piWithPrecision(Integer.parseInt(piPrecision)) : "";
       String fibonacci = showFibonacci ? numbersService.fibonacciSequence(Integer.parseInt(fibonacciCount)) : "";
 

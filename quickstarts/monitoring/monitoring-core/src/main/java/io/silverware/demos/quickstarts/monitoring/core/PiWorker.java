@@ -19,6 +19,10 @@
  */
 package io.silverware.demos.quickstarts.monitoring.core;
 
+import io.opentracing.SpanContext;
+
+import java.util.Map;
+
 /**
  * Interface for clustered worker microservice which generates Pi number for given precision.
  *
@@ -31,5 +35,5 @@ public interface PiWorker {
     * @param precision number of decimal points to calculate
     * @return string "3.14...."
     */
-   String getPiForPrecision(int precision);
+   String getPiForPrecision(int precision, Map contextMap);
 }
