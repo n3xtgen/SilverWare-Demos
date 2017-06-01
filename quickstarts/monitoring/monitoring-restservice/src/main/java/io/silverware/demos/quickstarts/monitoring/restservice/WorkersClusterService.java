@@ -83,20 +83,25 @@ public class WorkersClusterService {
     * Gets Pi string with given precision from one of the cluster workers.
     */
    public String getPiForPrecision(int precision, SpanContext spanContext) {
+
+      Span cdiPiRequestSpan = Tracing.createSpan("cdiPiRequestServer", spanContext).setTag("span.kind", "server");
+
       log.info("Calling for Pi Worker with precision: " + precision);
 
       final Timer.Context timeSpan = piResponseTimer.time();
 
-      Span piRequestSpan = Tracing.createSpan("piClusterRequestClient", spanContext).setTag("span.kind", "client");
+      Span clusterPiRequestSpan = Tracing.createSpan("clusterPiRequestClient", cdiPiRequestSpan.context()).setTag("span.kind", "client");
 
       Map<String,String> map = new HashMap<>();
-      GlobalTracer.get().inject(piRequestSpan.context(), Format.Builtin.TEXT_MAP,  new TextMapInjectAdapter(map));
+      GlobalTracer.get().inject(clusterPiRequestSpan.context(), Format.Builtin.TEXT_MAP,  new TextMapInjectAdapter(map));
 
       String pi = piWorker.getPiForPrecision(precision, map);
 
-      piRequestSpan.finish();
+      clusterPiRequestSpan.finish();
 
       timeSpan.stop();
+
+      cdiPiRequestSpan.finish();
 
       return pi;
    }
@@ -105,20 +110,25 @@ public class WorkersClusterService {
     * Gets Fibonacci string with given count of numbers from one of the cluster workers.
     */
    public String getFibonacciSequence(int numberCount, SpanContext spanContext) {
+
+      Span cdiFibonacciRequestSpan = Tracing.createSpan("cdiFibonacciRequestServer", spanContext).setTag("span.kind", "server");
+
       log.info("Calling for Fibonacci Worker with number count: " + numberCount);
 
       final Timer.Context timeSpan = fibonacciResponseTimer.time();
 
-      Span fibonacciRequestSpan = Tracing.createSpan("fibonacciClusterRequestClient", spanContext).setTag("span.kind", "client");
+      Span clusterFibonacciRequestSpan = Tracing.createSpan("clusterFibonacciRequestClient", cdiFibonacciRequestSpan.context()).setTag("span.kind", "client");
 
       Map<String,String> map = new HashMap<>();
-      GlobalTracer.get().inject(fibonacciRequestSpan.context(), Format.Builtin.TEXT_MAP,  new TextMapInjectAdapter(map));
+      GlobalTracer.get().inject(clusterFibonacciRequestSpan.context(), Format.Builtin.TEXT_MAP,  new TextMapInjectAdapter(map));
 
       String fibonacci = fibonacciWorker.getFibonacciSequence(numberCount, map);
 
-      fibonacciRequestSpan.finish();
+      clusterFibonacciRequestSpan.finish();
 
       timeSpan.stop();
+
+      cdiFibonacciRequestSpan.finish();
 
       return fibonacci;
    }

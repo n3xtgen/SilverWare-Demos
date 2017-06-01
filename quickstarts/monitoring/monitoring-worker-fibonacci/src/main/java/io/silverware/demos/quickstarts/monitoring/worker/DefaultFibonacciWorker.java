@@ -72,7 +72,7 @@ public class DefaultFibonacciWorker implements FibonacciWorker {
       Span fibonacciRequestSpan = null;
       if (spanContextMap != null) {
          SpanContext spanContext = GlobalTracer.get().extract(Format.Builtin.TEXT_MAP, new TextMapExtractAdapter(spanContextMap));
-         fibonacciRequestSpan = Tracing.createSpan("fibonacciClusterRequestServer", spanContext).setTag("span.kind", "server");
+         fibonacciRequestSpan = Tracing.createSpan("clusterFibonacciRequestServer", spanContext).setTag("span.kind", "server");
       }
 
       if (numberCount < 0) {
@@ -80,6 +80,8 @@ public class DefaultFibonacciWorker implements FibonacciWorker {
       }
 
       log.info(Integer.toHexString(hashCode()) + " Was asked for Fibonacci sequence number with precision: " + numberCount);
+
+      fibonacciRequestSpan.setTag("numberapp.fibonacci.count", numberCount);
 
       lengthHistogram.update(numberCount);
       final Timer.Context timeSpan = responseTimer.time();

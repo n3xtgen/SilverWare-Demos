@@ -75,7 +75,7 @@ public class NumbersRestService {
    @GET
    @Path("pi")
    @Produces(MediaType.TEXT_PLAIN)
-   @Traced(operationName = "piWithPrecision")
+   @Traced(operationName = "restPiRequest")
    public Response piWithPrecision(@QueryParam("precision") int precision, @BeanParam ServerSpan serverSpan) {
 
       Tracing.spanManager().activate(serverSpan.get());
@@ -84,10 +84,12 @@ public class NumbersRestService {
 
       piRequestCount.inc();
 
-      Span piRequestSpan = Tracing.createSpan("fibonacciClusterRequestClient", Tracing.currentSpan())
+      Span piRequestSpan = Tracing.createSpan("cdiPiRequestClient", Tracing.currentSpan())
             .setTag("span.kind", "client");
 
       String pi = workersClusterService.getPiForPrecision(precision, piRequestSpan.context());
+
+      piRequestSpan.finish();
 
       return Response.ok(pi).build();
    }
@@ -95,7 +97,7 @@ public class NumbersRestService {
    @GET
    @Path("fibonacci")
    @Produces(MediaType.TEXT_PLAIN)
-   @Traced(operationName = "fibonacciSequence")
+   @Traced(operationName = "restFibonacciRequest")
    public Response fibonacciSequence(@QueryParam("count") int numberCount, @BeanParam ServerSpan serverSpan) {
 
       Tracing.spanManager().activate(serverSpan.get());
@@ -104,10 +106,12 @@ public class NumbersRestService {
 
       fibonacciRequestCount.inc();
 
-      Span fibonacciRequestSpan = Tracing.createSpan("fibonacciClusterRequestClient", Tracing.currentSpan())
+      Span fibonacciRequestSpan = Tracing.createSpan("cdiFibonacciRequestClient", Tracing.currentSpan())
             .setTag("span.kind", "client");
 
       String fibonacciSequence = workersClusterService.getFibonacciSequence(numberCount, fibonacciRequestSpan.context());
+
+      fibonacciRequestSpan.finish();
 
       return Response.ok(fibonacciSequence).build();
    }

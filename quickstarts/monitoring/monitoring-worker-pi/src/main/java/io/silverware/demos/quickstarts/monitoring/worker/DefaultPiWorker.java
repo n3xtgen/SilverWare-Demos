@@ -72,10 +72,12 @@ public class DefaultPiWorker implements PiWorker {
       Span piRequestSpan = null;
       if (spanContextMap != null) {
          SpanContext spanContext = GlobalTracer.get().extract(Format.Builtin.TEXT_MAP, new TextMapExtractAdapter(spanContextMap));
-         piRequestSpan = Tracing.createSpan("piClusterRequestServer", spanContext).setTag("span.kind", "server");
+         piRequestSpan = Tracing.createSpan("clusterPiRequestServer", spanContext).setTag("span.kind", "server");
       }
 
       log.info(Integer.toHexString(hashCode()) + " Was asked for Pi number with precision: " + precision);
+
+      piRequestSpan.setTag("numberapp.pi.precision", precision);
 
       precisionHistogram.update(precision);
       final Timer.Context timeSpan = responseTimer.time();
